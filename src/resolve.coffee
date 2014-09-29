@@ -8,7 +8,7 @@ class resolve extends Transform
         @errCount = 0
         @successCount = 0
     _transform: (chunk, encoding, done)->
-        chunk.then ({msg, body})->
+        chunk.then ({msg, body})=>
             if body? and body.insertErrors? 
                 debug body.insertErrors[0].errors[0]
                 @errCount++

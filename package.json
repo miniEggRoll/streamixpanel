@@ -4,7 +4,7 @@
   "description": "streaming raw data from mixpanel",
   "main": "index.js",
   "scripts": {
-    "start": "DEBUG=batch,insert ./node_modules/.bin/coffee src/main.coffee",
+    "start": "DEBUG=batch,insert,resolve ./node_modules/.bin/coffee src/main.coffee",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

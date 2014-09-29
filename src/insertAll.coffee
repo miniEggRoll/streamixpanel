@@ -1,15 +1,17 @@
+Q               = require 'q'
 debug           = require('debug') 'insert'
-{Writable}      = require 'stream'
+{Transform}     = require 'stream'
 qs              = require 'querystring'
 request         = require 'request'
 _               = require 'underscore'
 
-class insertAll extends Writable
+class insertAll extends Transform
     constructor: ({@datasetId, @projectId, @tableId}, @access_token)->
         super
         @_cache = ''
         @_writableState.objectMode = true
-    _write: (rows, encoding, done)->
+        @_readableState.objectMode = true
+    _transform: (rows, encoding, done)->
         kind = 'event'
         reqOpt =
             method: 'POST'
@@ -20,9 +22,11 @@ class insertAll extends Writable
             body: {kind, rows}
             json: true
 
-        request reqOpt, (err, msg, body)->
-            if body and body.insertErrors? then debug body.insertErrors[0].errors[0]
-            debug msg.statusCode, rows.length
-            do done
+        promise =  Q.Promise (resolve, reject, notify)->
+            request reqOpt, (err, msg, body)->
+                if err then reject err else resolve {msg, body}
+        
+        @push promise
+        do done
 
 module.exports = insertAll

@@ -9,7 +9,7 @@ class resolve extends Writable
     _write: (chunk, encoding, done)->
         chunk.then ({msg, body})->
             if body? and body.insertErrors? then debug body.insertErrors[0].errors[0]
-            debug msg.statusCode, rows.length
+            debug msg.statusCode
         do done
 
 module.exports = resolve

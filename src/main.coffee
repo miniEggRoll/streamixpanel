@@ -1,3 +1,4 @@
+resolve         = require "#{__dirname}/resolve"
 batch           = require "#{__dirname}/batch"
 parse           = require "#{__dirname}/parser"
 splitLine       = require "#{__dirname}/splitLine"
@@ -18,3 +19,4 @@ jwt()
     .pipe new parse()
     .pipe new batch(100)
     .pipe new insertAll({projectId: 'fourth-gearing-708', datasetId: 'mixpanel', tableId: 'event'}, access_token)
+    .pipe new resolve()

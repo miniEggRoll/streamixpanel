@@ -5,7 +5,7 @@ class Batch extends Transform
         super
         @_writableState.objectMode = true
         @_readableState.objectMode = true
-        @debug = require('debug')('cluster:batch')
+        @debug = require('debug')('batch')
         @_cache = []
         @once 'end', =>
             @debug 'ended'

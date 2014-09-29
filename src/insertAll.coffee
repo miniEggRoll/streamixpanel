@@ -1,7 +1,8 @@
-{Writable} = require 'stream'
-qs = require 'querystring'
-request = require 'request'
-_ = require 'underscore'
+debug           = require 'debug' 'insert'
+{Writable}      = require 'stream'
+qs              = require 'querystring'
+request         = require 'request'
+_               = require 'underscore'
 
 class insertAll extends Writable
     constructor: ({@datasetId, @projectId, @tableId}, @access_token)->
@@ -20,7 +21,8 @@ class insertAll extends Writable
             json: true
         
         request reqOpt, (err, msg, body)->
-            if body.insertErrors? then console.log body.insertErrors[0].errors[0]
+            if body?.insertErrors? then debug body.insertErrors[0].errors[0]
+            debug msg.statusCode, rows.length
             do done
 
 module.exports = insertAll

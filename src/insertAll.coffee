@@ -1,4 +1,4 @@
-debug           = require 'debug' 'insert'
+debug           = require('debug') 'insert'
 {Writable}      = require 'stream'
 qs              = require 'querystring'
 request         = require 'request'
@@ -19,9 +19,9 @@ class insertAll extends Writable
                     @access_token
             body: {kind, rows}
             json: true
-        
+
         request reqOpt, (err, msg, body)->
-            if body?.insertErrors? then debug body.insertErrors[0].errors[0]
+            if body and body.insertErrors? then debug body.insertErrors[0].errors[0]
             debug msg.statusCode, rows.length
             do done
 

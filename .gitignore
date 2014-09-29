@@ -6,3 +6,5 @@ key.pem
 key.p12
 
 config.coffee
+
+npm-debug.log

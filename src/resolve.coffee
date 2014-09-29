@@ -15,7 +15,7 @@ class resolve extends Transform
                 debug @errCount if (@errCount % 10) is 0
             else @successCount++
             debug msg.statusCode
-        do done
+            do done
     _flush: (done)->
         debug "#{@successCount} batch inserted, #{@errCount} errors"
         @errCount = 0

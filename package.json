@@ -1,0 +1,23 @@
+{
+  "name": "streamixpanel",
+  "version": "0.0.0",
+  "description": "streaming raw data from mixpanel",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "coffee-script": "^1.8.0"
+  },
+  "dependencies": {
+    "mixpanel_client": "git+ssh://git@github.com/mrsquid0126/mixpanel_client",
+    "underscore": "^1.7.0",
+    "googleapis": "^1.0.14",
+    "request": "^2.44.0",
+    "jsonwebtoken": "^1.1.2",
+    "q": "^1.0.1",
+    "debug": "^2.0.0"
+  }
+}

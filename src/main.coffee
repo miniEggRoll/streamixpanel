@@ -8,8 +8,8 @@ config          = require "#{__dirname}/../config"
 _               = require 'underscore'
 
 dumpOption = 
-    from_date: new Date('2013-01-1')
-    to_date: new Date('2014-12-31')
+    from_date: new Date('2014-09-01')
+    to_date: new Date('2014-09-28')
 
 jwt()
 .then ({access_token})->

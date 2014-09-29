@@ -1,4 +1,6 @@
 {Transform}     = require 'stream'
+crypto          = require 'crypto'
+debug           = require('debug') 'parse'
 
 class parse extends Transform
     constructor: ->
@@ -7,8 +9,17 @@ class parse extends Transform
         @_readableState.objectMode = true
     _transform: (chunk, encoding, done)->
         try
-            obj = JSON.parse chunk.toString()
+            str = chunk.toString()
+            debug str
+            obj = JSON.parse str
+            
+            md5 = crypto.createHash 'md5'
+            md5.update new Buffer(str).toString 'binary'
+            id = md5.digest 'hex'
+            debug id
+
             @push {
+                insertId: id
                 json:
                     event: obj['event']
                     cdate: obj.properties.time
@@ -16,7 +27,7 @@ class parse extends Transform
                     json: JSON.stringify obj.properties
             }
         catch e
-            # ...
+            debug e
         do done
 
 module.exports = parse

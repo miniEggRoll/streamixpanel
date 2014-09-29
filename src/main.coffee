@@ -2,15 +2,15 @@ batch           = require "#{__dirname}/batch"
 parse           = require "#{__dirname}/parser"
 splitLine       = require "#{__dirname}/splitLine"
 insertAll       = require "#{__dirname}/insertAll"
-jwt       = require "#{__dirname}/jwt"
+jwt             = require "#{__dirname}/jwt"
 config          = require "#{__dirname}/../config"
 {raw}           = require('mixpanel_client') config
 _               = require 'underscore'
 
-
 dumpOption = 
-    from_date: new Date('2014-09-1')
-    to_date: new Date('2014-09-12')
+    from_date: new Date('2013-01-1')
+    to_date: new Date('2014-12-31')
+
 jwt()
 .then ({access_token})->
     raw dumpOption

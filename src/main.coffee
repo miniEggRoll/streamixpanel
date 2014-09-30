@@ -8,10 +8,11 @@ _               = require 'underscore'
 cluster         = require "cluster"
 debug           = require('debug') 'master'
 
-maxWorker       = require('os').cpus().length - 1
+
 config          = require "#{__dirname}/../config"
 {raw}           = require('mixpanel_client') config
-{from_date, to_date, batchSize, projectId, datasetId, tableId} = config
+{from_date, to_date, batchSize, projectId, datasetId, tableId, coreMin} = config
+maxWorker       = Math.min(require('os').cpus().length - 1, coreMin)
 
 if cluster.isMaster
     dumpOption = 

@@ -1,9 +1,11 @@
-Q               = require 'q'
-debug           = require('debug') 'insert'
-{Transform}     = require 'stream'
-qs              = require 'querystring'
-request         = require 'request'
-_               = require 'underscore'
+Q                       = require 'q'
+debug                   = require('debug') 'insert'
+{Transform}             = require 'stream'
+qs                      = require 'querystring'
+request                 = require 'request'
+_                       = require 'underscore'
+jwt                     = require "#{__dirname}/jwt"
+{tokenUpdatePeriod}     = require "#{__dirname}/../config"
 
 class insertAll extends Transform
     constructor: ({@datasetId, @projectId, @tableId}, @access_token)->
@@ -11,6 +13,12 @@ class insertAll extends Transform
         @_cache = ''
         @_writableState.objectMode = true
         @_readableState.objectMode = true
+        @_timeoutID = setTimeout @updateToken, tokenUpdatePeriod
+    updateToken: =>
+        debug 'updating token'
+        jwt().then ({@access_token})=>
+            debug "token #{@access_token}"
+            @_timeoutID = setTimeout @updateToken, tokenUpdatePeriod
     _transform: (rows, encoding, done)->
         kind = 'event'
         reqOpt =
@@ -28,5 +36,7 @@ class insertAll extends Transform
         
         @push promise
         do done
+    _flush: (done)->
+        clearTimeout @_timeoutID
 
 module.exports = insertAll

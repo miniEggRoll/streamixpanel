@@ -30,7 +30,7 @@ class insertAll
             json: true
 
         request reqOpt, (err, msg, body)->
-            if err or (msg.statusCode != '200')
+            if err or (msg.statusCode != 200)
                 insertIds = _.pluck(rows, 'insertId').join ','
                 output = "#{msg.statusCode}, #{err}, #{body.error?.message}, [#{insertIds}]\n"
                 fs.appendFile "err/#{insertAll::cdate}.txt", output, ->

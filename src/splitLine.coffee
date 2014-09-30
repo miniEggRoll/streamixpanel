@@ -14,7 +14,7 @@ class splitLine extends Transform
         .compact()
         .each @push.bind @
         .value()
-        setTimeout done, 20
+        do done
     _flush: (done)->
         @push @_cache
         @_cache = ''

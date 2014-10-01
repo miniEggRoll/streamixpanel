@@ -1,25 +1,24 @@
-Q                       = require 'q'
+fs                      = require 'fs'
 debug                   = require('debug') 'insert'
-{Transform}             = require 'stream'
-qs                      = require 'querystring'
 request                 = require 'request'
 _                       = require 'underscore'
 jwt                     = require "#{__dirname}/jwt"
 {tokenUpdatePeriod}     = require "#{__dirname}/../config"
 
-class insertAll extends Transform
+class insertAll
     constructor: ({@datasetId, @projectId, @tableId}, @access_token)->
-        super
+        insertAll::cdate ?= new Date()
         @_cache = ''
-        @_writableState.objectMode = true
-        @_readableState.objectMode = true
-        @_timeoutID = setTimeout @updateToken, tokenUpdatePeriod
+        @timeoutID = setTimeout @updateToken, tokenUpdatePeriod
     updateToken: =>
+        delete @timeoutID
         debug 'updating token'
         jwt().then ({@access_token})=>
             debug "token #{@access_token}"
-            @_timeoutID = setTimeout @updateToken, tokenUpdatePeriod
-    _transform: (rows, encoding, done)->
+            @timeoutID = setTimeout @updateToken, tokenUpdatePeriod
+    exit: ->
+        clearTimeout @timeoutID if @timeoutID?
+    start: (rows, done)->
         kind = 'event'
         reqOpt =
             method: 'POST'
@@ -30,13 +29,13 @@ class insertAll extends Transform
             body: {kind, rows}
             json: true
 
-        promise =  Q.Promise (resolve, reject, notify)->
-            request reqOpt, (err, msg, body)->
-                if err then reject err else resolve {msg, body}
-        
-        @push promise
-        do done
-    _flush: (done)->
-        clearTimeout @_timeoutID
+        request reqOpt, (err, msg, body)->
+            if err or (msg.statusCode != 200)
+                insertIds = _.pluck(rows, 'insertId').join ','
+                output = "#{msg.statusCode}, #{err}, #{body.error?.message}, [#{insertIds}]\n"
+                fs.appendFile "err/#{insertAll::cdate}.txt", output, ->
+                    debug msg.statusCode, err, body
+            else debug msg.statusCode
+            done?()
 
 module.exports = insertAll

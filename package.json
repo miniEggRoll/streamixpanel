@@ -4,8 +4,9 @@
   "description": "streaming raw data from mixpanel",
   "main": "index.js",
   "scripts": {
-    "start": "DEBUG=batch,insert,resolve ./node_modules/.bin/coffee src/main.coffee",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "DEBUG=batch,insert ./node_modules/.bin/coffee src/main.coffee",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "archive":"DEBUG=archive,parse ./node_modules/.bin/coffee src/archive.coffee"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +20,7 @@
     "request": "^2.44.0",
     "jsonwebtoken": "^1.1.2",
     "q": "^1.0.1",
-    "debug": "^2.0.0"
+    "debug": "^2.0.0",
+    "gcloud": "^0.7.1"
   }
 }

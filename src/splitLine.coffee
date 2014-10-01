@@ -1,5 +1,6 @@
 {Transform}     = require 'stream'
 _               = require 'underscore'
+{delay}         = require "#{__dirname}/../config"
 
 class splitLine extends Transform
     constructor: ->
@@ -14,7 +15,7 @@ class splitLine extends Transform
         .compact()
         .each @push.bind @
         .value()
-        setTimeout done, 20
+        setTimeout done, delay
     _flush: (done)->
         @push @_cache
         @_cache = ''

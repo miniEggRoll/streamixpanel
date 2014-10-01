@@ -1,24 +1,54 @@
-resolve         = require "#{__dirname}/resolve"
+dispatch        = require "#{__dirname}/dispatch"
 batch           = require "#{__dirname}/batch"
-parse           = require "#{__dirname}/parser"
+parse           = require "#{__dirname}/bigQueryParser"
 splitLine       = require "#{__dirname}/splitLine"
 insertAll       = require "#{__dirname}/insertAll"
 jwt             = require "#{__dirname}/jwt"
+_               = require 'underscore'
+cluster         = require "cluster"
+debug           = require('debug') 'master'
+
+
 config          = require "#{__dirname}/../config"
 {raw}           = require('mixpanel_client') config
-_               = require 'underscore'
+{from_date, to_date, batchSize, projectId, datasetId, tableId, coreMin} = config
+maxWorker       = Math.min(require('os').cpus().length - 1, coreMin)
 
-{from_date, to_date, batchSize} = config
+if cluster.isMaster
+    dumpOption = 
+        from_date: new Date(from_date)
+        to_date: new Date(to_date)
+    
+    dp = new dispatch()
 
-dumpOption = 
-    from_date: new Date(from_date)
-    to_date: new Date(to_date)
-
-jwt()
-.then ({access_token})->
-    raw dumpOption
+    source = raw dumpOption
     .pipe new splitLine()
     .pipe new parse()
     .pipe new batch(batchSize)
-    .pipe new insertAll({projectId: 'fourth-gearing-708', datasetId: 'mixpanel', tableId: 'ios'}, access_token)
-    .pipe new resolve()
+    .pipe dp
+
+    cluster.on 'exit', (worker, code, signal) ->
+        debug 'worker %s died', worker.process.pid
+
+    _.times maxWorker, ->
+        worker = cluster.fork()
+        dp.enqueue worker
+
+        worker.on 'message', ({type})->
+            switch type
+                when 'drain'
+                    debug 'worker %s drained', worker.process.pid
+                    if source.hasEnded
+                        debug 'finished processing, killing worker %s', worker.process.pid
+                        do worker.kill
+                    else
+                        debug 'nothing to read, enqueue'
+                        dp.enqueue worker
+
+else
+    jwt().then ({access_token})->
+        insert = new insertAll({projectId, datasetId, tableId}, access_token)
+        process.send {type: 'register'}
+
+        process.on 'message', ({data})->
+            insert.start data, -> process.send {type: 'drain'}

@@ -23,6 +23,7 @@ class parse extends Transform
             cdate: obj.properties?.time
             distinct_id: obj.properties?.distinct_id
             json: JSON.stringify obj.properties
+            project: @platform
         @push "#{JSON.stringify formated}\n" 
         @counter++
         debug "#{@platform} #{@counter} parsed" unless @counter%10000

@@ -24,7 +24,7 @@ _.each config.mixpanel, (setting, platform)->
     {raw} = mpClient setting
     source = raw dumpOption
     .pipe new splitLine()
-    .pipe new parse()
+    .pipe new parse(platform)
     .pipe bucket.createWriteStream platform
     .on 'error', (err)->
         debug err

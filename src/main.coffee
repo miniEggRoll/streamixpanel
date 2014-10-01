@@ -1,6 +1,6 @@
 dispatch        = require "#{__dirname}/dispatch"
 batch           = require "#{__dirname}/batch"
-parse           = require "#{__dirname}/parser"
+parse           = require "#{__dirname}/bigQueryParser"
 splitLine       = require "#{__dirname}/splitLine"
 insertAll       = require "#{__dirname}/insertAll"
 jwt             = require "#{__dirname}/jwt"

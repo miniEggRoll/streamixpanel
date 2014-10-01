@@ -14,16 +14,15 @@ class parse extends Transform
         
         try
             obj = JSON.parse str
-            formated =
-                event: obj['event']
-                cdate: obj.properties?.time
-                distinct_id: obj.properties?.distinct_id
-                json: JSON.stringify obj.properties
         catch e
             @errCounter++
             do done
             return
-
+        formated =
+            event: obj['event']
+            cdate: obj.properties?.time
+            distinct_id: obj.properties?.distinct_id
+            json: JSON.stringify obj.properties
         @push "#{JSON.stringify formated}\n" 
         @counter++
         debug "#{@platform} #{@counter} parsed" unless @counter%10000

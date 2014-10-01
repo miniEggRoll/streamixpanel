@@ -1,9 +1,8 @@
 {Transform}     = require 'stream'
-crypto          = require 'crypto'
 debug           = require('debug') 'parse'
 
-class parse extends Transform
-    constructor: (@platform)->
+class reformat extends Transform
+    constructor: (@project)->
         super
         @_writableState.objectMode = true
         @_readableState.objectMode = true
@@ -18,19 +17,15 @@ class parse extends Transform
             @errCounter++
             do done
             return
-        formated =
-            event: obj['event']
-            cdate: obj.properties?.time
-            distinct_id: obj.properties?.distinct_id
-            json: JSON.stringify obj.properties
-        @push "#{JSON.stringify formated}\n" 
+        obj.project = @project
+        @push "#{JSON.stringify obj}\n" 
         @counter++
-        debug "#{@platform} #{@counter} parsed" unless @counter%10000
+        debug "#{@project} #{@counter} parsed" unless @counter%10000
         do done
     _flush: (done)->
-        debug "#{@platform} success: #{@counter}; fail:#{@errCounter}"
+        debug "#{@project} success: #{@counter}; fail:#{@errCounter}"
         @counter = 0
         @errCounter = 0
         do done
 
-module.exports = parse
+module.exports = reformat

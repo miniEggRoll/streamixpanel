@@ -6,7 +6,8 @@
   "scripts": {
     "start": "DEBUG=batch,insert ./node_modules/.bin/coffee src/main.coffee",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "archive":"DEBUG=archive,parse ./node_modules/.bin/coffee src/archive.coffee"
+    "archive":"DEBUG=archive,parse ./node_modules/.bin/coffee src/archive.coffee",
+    "rewrite":"DEBUG=rewrite,parse ./node_modules/.bin/coffee src/rewrite.coffee"
   },
   "author": "",
   "license": "ISC",

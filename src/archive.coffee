@@ -6,7 +6,7 @@ gcloud          = require 'gcloud'
 _               = require 'underscore'
 config          = require "#{__dirname}/../config"
 mpClient        = require('mixpanel_client')
-{from_date, to_date, batchSize, projectId, datasetId, tableId, coreMin} = config
+{from_date, to_date, batchSize, projectId, datasetId, tableId, coreMin, bucketName} = config
 
 dumpOption = 
     from_date: new Date(from_date)
@@ -17,11 +17,10 @@ project = gcloud {
     projectId: projectId
 }
 
-bucket = project.storage.bucket {
-    bucketName: 'mixpanel_events'
-}
+bucket = project.storage.bucket {bucketName}
 
 _.each config.mixpanel, (setting, platform)->
+    debug 'start archiving %s', platform
     {raw} = mpClient setting
     source = raw dumpOption
     .pipe new splitLine()
@@ -29,5 +28,5 @@ _.each config.mixpanel, (setting, platform)->
     .pipe bucket.createWriteStream platform
     .on 'error', (err)->
         debug err
-    .on 'complete', (fileStat)->
-        debug fileStat
+    .on 'complete', ({size, id})->
+        debug "done with #{id}, #{size} bytes"

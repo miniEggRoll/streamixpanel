@@ -7,6 +7,8 @@ class parse extends Transform
         super
         @_writableState.objectMode = true
         @_readableState.objectMode = true
+        @counter = 0
+        @errCounter = 0
     _transform: (chunk, encoding, done)->
         try
             str = chunk.toString()
@@ -25,8 +27,15 @@ class parse extends Transform
                 json: JSON.stringify obj.properties
 
             @push "#{JSON.stringify formated}\n" 
+            @counter ++
         catch e
             debug e
+            @errCounter++
+        do done
+    _flush: (done)->
+        debug "success: #{@counter}\nfail:#{@errCounter}"
+        @counter = 0
+        @errCounter = 0
         do done
 
 module.exports = parse

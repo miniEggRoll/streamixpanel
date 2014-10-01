@@ -14,20 +14,15 @@ class parse extends Transform
         
         try
             obj = JSON.parse str
+            formated =
+                event: obj['event']
+                cdate: obj.properties?.time
+                distinct_id: obj.properties?.distinct_id
+                json: JSON.stringify obj.properties
         catch e
             @errCounter++
             do done
             return
-
-        md5 = crypto.createHash 'md5'
-        md5.update new Buffer(str).toString 'binary'
-        id = md5.digest 'hex'
-
-        formated =
-            event: obj['event']
-            cdate: obj.properties.time
-            distinct_id: obj.properties.distinct_id
-            json: JSON.stringify obj.properties
 
         @push "#{JSON.stringify formated}\n" 
         @counter++

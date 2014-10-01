@@ -12,13 +12,11 @@ class parse extends Transform
     _transform: (chunk, encoding, done)->
         try
             str = chunk.toString()
-            debug str
             obj = JSON.parse str
             
             md5 = crypto.createHash 'md5'
             md5.update new Buffer(str).toString 'binary'
             id = md5.digest 'hex'
-            debug id
 
             formated =
                 event: obj['event']
@@ -27,7 +25,7 @@ class parse extends Transform
                 json: JSON.stringify obj.properties
 
             @push "#{JSON.stringify formated}\n" 
-            @counter ++
+            @counter++
         catch e
             debug e
             @errCounter++

@@ -31,6 +31,7 @@ class parse extends Transform
 
         @push "#{JSON.stringify formated}\n" 
         @counter++
+        debug "#{platform} #{counter} parsed" unless @counter%10000
         do done
     _flush: (done)->
         debug "#{@platform} success: #{@counter}; fail:#{@errCounter}"

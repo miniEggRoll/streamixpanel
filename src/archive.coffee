@@ -25,7 +25,7 @@ _.each config.mixpanel, (setting, platform)->
     source = raw dumpOption
     .pipe new splitLine()
     .pipe new parse(platform)
-    .pipe bucket.createWriteStream platform
+    .pipe bucket.createWriteStream "#{platform}_#{from_date}_#{to_date}"
     .on 'error', (err)->
         debug err
     .on 'complete', ({size, id})->

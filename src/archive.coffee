@@ -3,9 +3,9 @@ splitLine       = require "#{__dirname}/splitLine"
 
 debug           = require('debug') 'archive'
 gcloud          = require 'gcloud'
-
+_               = require 'underscore'
 config          = require "#{__dirname}/../config"
-{raw}           = require('mixpanel_client') config
+mpClient        = require('mixpanel_client')
 {from_date, to_date, batchSize, projectId, datasetId, tableId, coreMin} = config
 
 dumpOption = 
@@ -21,11 +21,13 @@ bucket = project.storage.bucket {
     bucketName: 'mixpanel_events'
 }
 
-source = raw dumpOption
-.pipe new splitLine()
-.pipe new parse()
-.pipe bucket.createWriteStream tableId
-.on 'error', (err)->
-    debug err
-.on 'complete', (fileStat)->
-    debug fileStat
+_.each config.mixpanel, (setting, platform)->
+    {raw} = mpClient setting
+    source = raw dumpOption
+    .pipe new splitLine()
+    .pipe new parse()
+    .pipe bucket.createWriteStream platform
+    .on 'error', (err)->
+        debug err
+    .on 'complete', (fileStat)->
+        debug fileStat
